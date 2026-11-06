@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#14182e">
+  <meta name="description" content="Super Nza Bros - Game Platformer 16-Bit Klasik dengan 4 World, Power-Up Jamur & Bunga Api, serta Duel Boss King Koopatron.">
+  <title>Super Nza Bros — 16-Bit Platformer Arcade</title>
+  <link rel="icon" type="image/png" href="assets/ui/favicon.png">
+  <link rel="apple-touch-icon" href="assets/ui/icon_192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="arcade-shell" class="arcade-shell">
+    <header class="hud-bar">
+      <div class="hud-stats">
+        <div class="hud-item">
+          <span class="hud-label">PAHLAWAN</span>
+          <span id="hud-score" class="hud-val">000000</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">KOIN</span>
+          <span id="hud-coins" class="hud-val gold">x00</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">WORLD</span>
+          <span id="hud-world" class="hud-val">1-1</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">WAKTU</span>
+          <span id="hud-time" class="hud-val">360</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">NYAWA</span>
+          <span id="hud-lives" class="hud-val crimson">x3</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">POWER</span>
+          <span id="hud-power" class="power-pill" data-power="small">SMALL</span>
+        </div>
+      </div>
+
+      <div class="hud-actions">
+        <button id="btn-touch-toggle" type="button" class="icon-btn" title="Tampilkan/Sembunyikan Tombol Layar Sentuh">🎮 Gamepad</button>
+        <button id="btn-mute" type="button" class="icon-btn" title="Suara Musik & Efek (M)">🔊 Suara</button>
+        <button id="btn-restart-top" type="button" class="icon-btn" title="Ulang Stage (R)">↻ Ulang</button>
+        <button id="btn-pause" type="button" class="icon-btn" title="Jeda Permainan (P / Esc)">⏸ Jeda</button>
+        <button id="btn-fullscreen" type="button" class="icon-btn" title="Layar Penuh">⛶ Penuh</button>
+      </div>
+    </header>
+
+    <section class="viewport-wrap">
+      <canvas id="game-canvas" width="960" height="544"></canvas>
+
+      <div id="boss-hud" class="boss-hud hidden">
+        <div class="boss-hud-header">
+          <span id="boss-name">KING KOOPATRON</span>
+          <span>BOSS</span>
+        </div>
+        <div class="boss-hp-track">
+          <div id="boss-hp-fill" class="boss-hp-fill"></div>
+        </div>
+      </div>
+
+      <div id="screen-menu" class="modal-backdrop">
+        <div class="hero-card">
+          <div class="hero-banner-wrap">
+            <img src="assets/ui/hero_banner.png" alt="Super Nza Bros Key Art" class="hero-banner-img">
+            <div class="hero-banner-gradient"></div>
+            <div class="hero-brand">
+              <img src="assets/ui/game_icon.png" alt="Ikon Super Nza Bros" class="hero-app-icon">
+              <div>
+                <div class="access-pill">Tanpa login - langsung pakai</div>
+                <h1>SUPER NZA BROS</h1>
+                <p class="hero-sub">Petualangan Platformer 16-Bit • 4 World Lengkap & Duel Boss</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-body">
+            <div class="meta-strip">
+              <span>🏆 Skor Tertinggi: <strong id="menu-highscore">000000</strong></span>
+              <span>⚡ Karya Mandiri: <strong>Nza (nzadev)</strong></span>
+              <span>📱 Support: <strong>PC, HP & Gamepad</strong></span>
+            </div>
+
+            <div id="loading-box" class="loading-box">
+              <div class="loading-track">
+                <div id="loading-bar-fill" class="loading-fill"></div>
+              </div>
+              <p id="loading-status">Memuat aset pixel-art...</p>
+            </div>
+
+            <div id="start-actions" class="menu-buttons hidden">
+              <button id="btn-play" type="button" class="btn btn-primary btn-lg">▶ Mulai Petualangan (World 1-1)</button>
+              <div class="menu-row">
+                <button id="btn-open-worlds" type="button" class="btn btn-secondary">🗺 Pilih World (1-1 s/d 1-4)</button>
+                <button id="btn-open-help" type="button" class="btn btn-secondary">⌨ Kontrol & Panduan</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="screen-worlds" class="modal-backdrop hidden">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2>Pilih World Petualangan</h2>
+            <button id="btn-back-from-worlds" type="button" class="btn btn-ghost">← Kembali</button>
+          </div>
+          <p class="panel-note">Seluruh 4 stage dapat langsung dimainkan atau diuji langsung mulai dari padang rumput hingga benteng Boss.</p>
+          <div id="world-grid" class="world-grid"></div>
+        </div>
+      </div>
+
+      <div id="screen-help" class="modal-backdrop hidden">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2>Panduan Kontrol & Mekanika</h2>
+            <button id="btn-back-from-help" type="button" class="btn btn-ghost">← Kembali</button>
+          </div>
+          <div class="help-columns">
+            <div class="help-box">
+              <h3>Kontrol Keyboard & Layar Sentuh</h3>
+              <ul>
+                <li><strong>Gerak Kiri / Kanan:</strong> <code>A / D</code> atau <code>Panah ◀ ▶</code></li>
+                <li><strong>Lompat (Tahan = Tinggi):</strong> <code>Spasi</code>, <code>W</code>, <code>Z</code>, atau <code>Panah ▲</code></li>
+                <li><strong>Lari Cepat & Bola Api:</strong> <code>Shift</code>, <code>X</code>, atau <code>J</code></li>
+                <li><strong>Jeda / Ulang / Mute:</strong> <code>P</code> / <code>R</code> / <code>M</code></li>
+                <li><strong>Mobile / HP:</strong> Tombol D-Pad + tombol <code>B</code> (Api/Lari) & <code>A</code> (Lompat) otomatis muncul.</li>
+              </ul>
+            </div>
+            <div class="help-box">
+              <h3>Item Power-Up & Tips Menang</h3>
+              <ul>
+                <li><strong>Jamur Super:</strong> Tubuh membesar & mampu menghancurkan blok bata dari bawah.</li>
+                <li><strong>Bunga Api:</strong> Menembakkan bola api pantul untuk mengalahkan musuh & Boss.</li>
+                <li><strong>Bintang Super:</strong> Kebal sementara & menumbangkan musuh sekali sentuh.</li>
+                <li><strong>Cangkang Kooparok:</strong> Injak kura-kura lalu tendang cangkangnya untuk strike beruntun!</li>
+                <li><strong>Raja Koopatron (World 1-4):</strong> Kalahkan dengan bola api/injakan atau sentuh Kapak Emas di ujung jembatan!</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="overlay-pause" class="modal-backdrop hidden">
+        <div class="dialog-card">
+          <span class="badge">PERMAINAN DIJEDA</span>
+          <h2>Istirahat Sejenak</h2>
+          <div class="dialog-actions">
+            <button id="btn-resume" type="button" class="btn btn-primary">▶ Lanjutkan Main</button>
+            <button id="btn-pause-restart" type="button" class="btn btn-secondary">↻ Ulangi Stage Ini</button>
+            <button id="btn-pause-menu" type="button" class="btn btn-ghost">🏠 Menu Utama</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="overlay-result" class="modal-backdrop hidden">
+        <div class="dialog-card">
+          <span id="result-badge" class="badge badge-success">SELESAI</span>
+          <h2 id="result-title">Stage Selesai!</h2>
+          <p id="result-desc" class="dialog-desc"></p>
+          <div class="score-summary">
+            <div>
+              <span>TOTAL SKOR</span>
+              <strong id="result-score">0</strong>
+            </div>
+            <div>
+              <span>KOIN TERKUMPUL</span>
+              <strong id="result-coins">0</strong>
+            </div>
+          </div>
+          <div class="dialog-actions">
+            <button id="btn-next-stage" type="button" class="btn btn-primary">Lanjut World Berikutnya →</button>
+            <button id="btn-retry-stage" type="button" class="btn btn-secondary">↻ Mainkan Ulang Stage</button>
+            <button id="btn-result-menu" type="button" class="btn btn-ghost">🏠 Menu Utama</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="touch-controls" class="touch-controls hidden">
+        <div class="dpad-group">
+          <button type="button" class="touch-btn dpad-btn" data-control="left" aria-label="Kiri">◀</button>
+          <button type="button" class="touch-btn dpad-btn" data-control="right" aria-label="Kanan">▶</button>
+        </div>
+        <div class="action-group">
+          <button type="button" class="touch-btn act-b" data-control="action" aria-label="Lari dan Api">B<span>API/LARI</span></button>
+          <button type="button" class="touch-btn act-a" data-control="jump" aria-label="Lompat">A<span>LOMPAT</span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
